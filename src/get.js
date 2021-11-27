@@ -1,5 +1,14 @@
 
 var Gun = require('./root');
+
+Gun.chain.getp = function(key, cb, at){
+	return new Promise((resolve,regect)=>{
+		this.get(key, cb,at).once((data,key)=>{
+		   resolve(data)
+		})
+	})
+}
+
 Gun.chain.get = function(key, cb, as){
 	var gun, tmp;
 	if(typeof key === 'string'){
@@ -8,14 +17,15 @@ Gun.chain.get = function(key, cb, as){
 			if(cb){ cb.call(gun, gun._.err) }
 			return gun;
 		}
-		var back = this, cat = back._;
+		var back = this;
+		var cat = back._;
 		var next = cat.next || empty;
 		if(!(gun = next[key])){
 			gun = key && cache(key, back);
 		}
 		gun = gun && gun.$;
 	} else
-	if('function' == typeof key){
+	if(typeof key === 'function'){
 		if(true === cb){ return soul(this, key, cb, as), this }
 		gun = this;
 		var cat = gun._, opt = cb || {}, root = cat.root, id;
@@ -85,10 +95,10 @@ Gun.chain.get = function(key, cb, as){
 		root.pass = tmp;
 		return gun;
 	} else
-	if('number' == typeof key){
+	if(typeof key === 'number'){
 		return this.get(''+key, cb, as);
 	} else
-	if('string' == typeof (tmp = valid(key))){
+	if(typeof (tmp = valid(key)) === 'string'){
 		return this.get(tmp, cb, as);
 	} else
 	if(tmp = this.get.next){
